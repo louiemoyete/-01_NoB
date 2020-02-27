@@ -1,0 +1,39 @@
+First of, Good Morning.
+
+Student Name, Luis Moyano.
+Student ID, 101064606.
+
+Include, math library : -lm when compiling
+
+List of files :
+cipher1.c
+cipher2.c
+cipher3.c
+cipher.c
+decipher.c
+
+The first three files go perfectly.
+You will notice something weird about the fourth,
+I had not realised that the we were tasked to work on a character array holding a bit sequence.
+I had been working with an integer array all this time, and up until in the specification of question 5 I read something about chars and bits
+I took it upon myself to change the output a bit.
+I honesty don't quite understand the instructions very well and have little idea of what I'm supposed to do or how to do it.
+So I did it how it made sense, and in question 4 you will notice 3 different outputs :
+the first one is the same as the outputs in all the other cipher files, where the array holding the encoded binary sequence as integers is printed out
+the second output comes from a function that loops through this array and uses sprintf to convert them all into one single string.
+      Regarding on this string, notice that every sequence of bytes starts with a 0b.
+      I tried it all, even though the sequence of 1s and 0s is proper, and even though it starts with a 0b,
+      I still cannot get it to output its corresponding ASCII code with %c;
+      not its corresponding ASCII number with %d.
+      But I left it in the result cause I got confused in the end regarding the format the professor wanted the result to be in.
+Finally, the third result prints what I originally had for this function and what I think is what Mr. Lanthier wanted.
+I.E.: the sequence of bits corresponding to the random encoding + a bunch of -1 all the way up AND including 100.
+
+As for the decipher.
+The random ciphering is inside the code, it occurs after you run the program and type whatever.
+Then the deciphering occurs
+All the deciphering code was done separately, assuming there was no knowledge of the ciphering.
+It is all in th ecomments
+enjoy
+
+Luis 
