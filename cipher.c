@@ -76,9 +76,10 @@ void convertIntArray_toCharacterArray( unsigned int arbitraryArray_ofIntegers[ M
         arbitraryArray_ofCharacters_singleString[( i* 10 )]= '0';
         arbitraryArray_ofCharacters_singleString[(( i* 10 )+ 1 )]= 'b';
 			/** ** ** *
-	Notice the difference when we add a '0b\0' to the first three places, 
-	The \0 will delete everything at the right of it. 
-	Then, strcat will replace it with whatever, and add a new one on its own 
+	Note : 
+		the difference when we add a '0b\0' to the first three places, 
+		The \0 will delete everything at the right of it. 
+		Then, strcat will replace it with whatever, and add a new one on its own 
 			* ** ** **/
         //arbitraryArray_ofCharacters_variousStrings[ 0 ]= '0';
         //arbitraryArray_ofCharacters_variousStrings[ 1 ]= 'b';
@@ -117,9 +118,8 @@ void convertIntArray_toCharacterArray( unsigned int arbitraryArray_ofIntegers[ M
 ***************************************************************************************************/
 void count_theBITS( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int numValue, unsigned int boolean_type_int )
 {
-    /*
-    for loop checks the bits for 1s, making the math
-    */
+
+// for loop checks the bits for 1s; holding j, if the bit is 1 then numValue += 2^j 
     for( int j= ( BYTE_SIZE-1 ); j>= 0; j-- )
     {
         if( arbitraryArray_ofIntegers[ row_counter ][ j ]== 1 ){ numValue+= pow( 2,j ); }
@@ -193,18 +193,21 @@ void flip_theBITS_add_aONE( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ]
 
 }
 
-/******************************************************************************************
-																							Left here
-																		******************************************************************************************/
-																		/************************************************************************************************************************************
-	Function :
+/************************************************************************************************************************************
+	Function : 
+		Print Array Vertically
 	Parametres : 
+		unsigned int : arbitraryArray_ofIntegers
+		int : row_counter
 	Return : 
+		void 
 	Functionality : 
-
-printArray Vertically will take the array, go through it, and print its values in a vertical format
-MUST SPECIFY THAT ONLY THE ROW PASSED THROUGH IN THE PARAMETRE IS PRINTED
-Note that this function is no longer used. Made for testin gpurposes only
+		Prints the values of the array passed through the parametre in vertical format.
+		Only the row passed through the parametre is printed. 
+			*!* Function no longer used, made for testing purposes only. *!*
+	Local Variables : 
+		int j :
+			( for loop ) traverses the array's columns
 ************************************************************************************************************************************/
 void printArray_Vertically( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter)
 {
@@ -216,14 +219,19 @@ void printArray_Vertically( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ]
 
 /************************************************************************************************************************************
 	Function :
+		Print Array Horizontally
 	Parametres : 
+		unsigned int : arbitraryArray_ofIntegers
+		int : row_counter
 	Return : 
+		void 
 	Functionality : 
+		Prints the values of the array passed through the parametre in horizontal format.
+		Only the row passed through the parametre is printed 
+			*!* Function no longer used, made for testing purposes only. *!*
 	Local Variables : 
-		None
-printArray Vertically will take the array, go through it, and print its values in a horizontal format
-MUST SPECIFY THAT ONLY THE ROW PASSED THROUGH IN THE PARAMETRE IS PRINTED
-Note that this function is no longer used. Made for testin gpurposes only
+		int j : 	
+			( for loop ) traverses the array's columns
 ************************************************************************************************************************************/
 void printArray_Horizontally( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter )
 {
@@ -235,21 +243,29 @@ void printArray_Horizontally( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH
 
 /************************************************************************************************************************************
 	Function :
+		Print Entire Array Horizontally
 	Parametres : 
+		unsigned int : arbitraryArray_ofIntegers
+		unsigned int : length_ofWord
 	Return : 
+		void 
 	Functionality : 
-
-printEntireArray_Horizontally will take the array, go through it, and print its values in a horizontal format
+		Uses Nested For Loop to print the values of the array passed through in the parametre in horizonal format. As a 2D array. 
+		The print statement is formatted with a width of 2 
+	Local Variables : 
+		int i : 
+			( for loop ) traverses the array's rows 
+		int j : 
+			( nested for loop ) traverses the array's columns
 ************************************************************************************************************************************/
 void printEntireArray_Horizontally( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int length_ofWord )
 {
-    unsigned char nibbleCounter = 0;
     printf("As a 2D integer array, formatted with a width of 2 : \n");
     for( int i= 0; i< length_ofWord; i++ )
     {
         for( int j= ( 2 ); j> 0; j-- )
         {
-            printf("%*d%*d%*d%*d",
+            printf("%*d%*d%*d%*d\n",
                 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 1 ], 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 2 ],
                 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 3 ], 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 4 ]
             );
@@ -258,17 +274,26 @@ void printEntireArray_Horizontally( unsigned int arbitraryArray_ofIntegers[ MAX_
 }
 /************************************************************************************************************************************
 	Function :
+		Print Entire Array Horizontally Full
 	Parametres : 
+		unsigned int : 
+			arbitraryArray_ofIntegers
 	Return : 
+		void 
 	Functionality : 
+		Prints the entire array passed through parametres : 
+		in horizontal format, 
+		with a length of 100 characters, 
+		filling the non-0 & non-1 characters with -1,
+		with a width of 2 
 	Local Variables : 
-		None
-printEntireArray_Horizontally_FULL will take the array, go through it, and print its values in a horizontal format
-WILL PRINT ALL 100 CHARACTERS, as it is asked for in the specifications : with a -1 filling the empty spots
+		int i : 
+			( for loop ) traverses array's rows 
+		int j : 
+			( nest for loop ) traverses array's columns
 ************************************************************************************************************************************/
 void printEntireArray_Horizontally_FULL( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ] )
 {
-    unsigned char nibbleCounter = 0;
     printf("As the specifications asked for : \n");
     for( int i= 0; i< MAX_LENGTH; i++ )
     {
@@ -284,18 +309,23 @@ void printEntireArray_Horizontally_FULL( unsigned int arbitraryArray_ofIntegers[
 
 /************************************************************************************************************************************
  	Function :
+		Initialise Int Array 
 	Parametres : 
+		unsigned int arbitraryArray_ofIntegers
 	Return : 
+		int ( an 2D array of ) 
 	Functionality : 
+		Fills an Array with the values provided by INIT_NUM ( define ) 
  	Local Variables : 
-		None
- initialiseIntArray will take an array and set all its values to zero
+		int i : 
+			Traverses the array's rows, going up until MAX_LENGTH ( define ) 
+		int j : 
+			Traverses the array's columns, going up until BYTE_SIZE ( define ) 
 ************************************************************************************************************************************/
 int initialiseIntArray( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ] )
 {
-    /*
-    For loop initialises 2D array with zeroes
-    */
+
+// For loop initialises 2D array with zeroes
     for( int i= 0; i< MAX_LENGTH; i++)
     {
         for( int j= 0; j< BYTE_SIZE; j++)
@@ -308,16 +338,26 @@ int initialiseIntArray( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BY
 
 /************************************************************************************************************
 	Function :
+		to ASCII on Twos Complement
 	Parametres : 
-	Return : 
-	Functionality : 	Local Variables : 
-		None
-
-function takes as parametre the two 2d arrays and two integers.
-it encodes the original, by filling the encoded array with the opposite values compared to the original.
-Then it checks if its posiive or negative, by checkng the leftmost sign,
-given that decision, we move on to the next function : flip and add one,
-or jump to the last function : count theBITS
+		unsigned int inputString_original
+		unsigned int inputString_enconded
+		int row_counter
+		unsigned int temp
+	Return :
+		int 
+	Functionality :
+		Taking both 2D arrays and two integers, 
+		it 'encodes' inputString_enconded by flipping all the bits of the sequence.
+		Then checks if we have a positive or a negative in the leftmost digit 
+		Either calling flip_theBITS_add_aONE or count_theBITS
+ 	Local Variables : 
+		unsigned int numValue : 
+			numValue = 0, is passed to whatever function is called 
+		unsigned int whileLoop_condition : 
+			N/A
+		unsigned int whileLoop_counter : 
+			N/A
 ************************************************************************************************************/
 int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp )
 {
@@ -325,9 +365,7 @@ int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ B
     unsigned int whileLoop_condition= 1;
     unsigned int whileLoop_counter= 0;
 
-    /*
-    for loop flips  all the bits of the sequence above
-    */
+// for loop flips  all the bits of the sequence above
     for( int j= ( BYTE_SIZE-1 ); j>= 0; j-- )
     {
         if((( temp& ( 1<< j ))>> j )> 0 )
@@ -340,9 +378,7 @@ int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ B
         }
     }
 
-    /*
-    If statement checks if we have a positive or a negative in the left most digit of out 8-bit sequence
-    */
+// If statement checks if we have a positive or a negative in the left most digit of out 8-bit sequence
     if( inputString_enconded[ row_counter ][ 7 ]== 1 )
     {
         flip_theBITS_add_aONE( inputString_enconded, row_counter, numValue );
@@ -353,6 +389,14 @@ int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ B
     }
     return inputString_enconded;
 }
+
+							/******************************************************************************************
+							******************************************************************************************
+							******************************************************************************************
+																							Left here
+							******************************************************************************************
+							******************************************************************************************
+							******************************************************************************************/
 
 /************************************************************************************************************
 	Function :
