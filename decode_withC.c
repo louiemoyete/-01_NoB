@@ -4,7 +4,6 @@
 
 
 
-/*                                       DECIPHER                                 */
 /****************************************************************************************************
                 ASSUME THE OUTPUT FROM CIPHER :
                 A BINARY SEQUENCE FOLLOWED BY -1s
@@ -13,18 +12,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <time.h>
+#include <math.h>
 
-#define MAX_LENGTH 101       // We assume the string to be 100 characters long + the null terminator.
-#define BYTE_SIZE 8          // Size of a byte in bits, size of a character in bits
-#define BYTE_SIZE_ARRAY 7    // From 0 to 7
-#define NIBBLE_SIZE 4        // Size of a nibble in bits, size of half a character in bits
-#define START_oftheARRAY 0   // Define the starting point of an array
-#define $_TRUE 1             // Boolean type integer mimicks true/false statement
-#define $_FALSE 0            // Boolean type integer mimicks true/false statement
-#define INIT_NUM -1            // Number to initialise Int Arrays with
-#define INIT_NUM_DECIPHER 0   // Number with which we initialise the decipher array
+#define MAX_LENGTH_USER_INPUT 50        // Max length of string
+#define POSITIVE 1             			// Mimicks boolean
+#define NEGATIVE 0            			// Mimicks boolean
+#define BEGINNING_ARRAY 0   			// Starting point of arrays 
+#define INIT_NUM 0            			// Digit to initialise arrays with 
+#define INIT_NUM_DECIPHER 0   			// Digit to initialise the decipher arrays with 
+#define SIZE_BYTE 8          			// Size of byte 
+#define SIZE_BYTE_ARRAY 7    			// Number used when traversing arrays 
+#define SIZE_NIBBLE 4        			// Size of nibble 
 
 /*
 Global variables
@@ -33,34 +32,40 @@ int decodedRows = 0; // The rows we will figure out to be in our decoded array
 float percentageAlphanumerical_Max = 0; // The rows we will figure out to be in our decoded array
 
 /* Define the functions */
-void count_theBITS( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int numValue, unsigned int boolean_type_int );
-void flip_theBITS_add_aONE( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int numValue );
-int initialiseIntArray( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int init );
-int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp );
-int toASCII_onBitReverse( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp );
-int toASCII_nibbleSwap( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp );
-void printEntireArray_Horizontally_FULL( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ] );
-void decipherCode( unsigned int enconded[ MAX_LENGTH ][ BYTE_SIZE ] );
-void decipherNibbleSwap( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] );
-void decipherBitReverse( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] );
-void decipherBitFlip( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] );
+int initialiseAn_intArray( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int init );
+void print_arrayHorizontally_Entire( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ] );
+void counting_theBits( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int valueNumber, unsigned int boolean_int );
+void flipAnd_addOne( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int valueNumber );
 
+int encode_onFlippingBits( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp );
+int encode_onSwappingBits( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp );
+int encode_onSwappingNibbles( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp );
+void decipher_Code( unsigned int encodedSequences[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ] );
+void decipher_NibbleSwap( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] );
+void decipher_BitSwap( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] );
+void decipher_BitFlip( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] );
+
+
+
+/***************************************************************************************************
+							HERE : 
+/***************************************************************************************************
 
 /***************************************************************************************************
 count theBITS takes and array of integers, which it traveses using a for loop.
 The variable row counter in its parametres serves as the row, and the for loop index variable j will do as the columns.
 As it goes, each makes a power notation of 2^j for each entry that == 1
-it adds it to the parametre passed, numValue
+it adds it to the parametre passed, valueNumber
 and finally, it prints it out as a negative or a positive. Depending n the valye of boolean type int. Also in the parametre.
 ***************************************************************************************************/
-void count_theBITS( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int numValue, unsigned int boolean_type_int )
+void counting_theBits( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int valueNumber, unsigned int boolean_int )
 {
     /*
     for loop checks the bits for 1s, making the math
     */
-    for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+    for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
     {
-        if( arbitraryArray_ofIntegers[ row_counter ][ j ]== 1 ){ numValue+= pow( 2,j ); }
+        if( intArray[ counterRows ][ j ]== 1 ){ valueNumber+= pow( 2,j ); }
     }
 }
 
@@ -69,28 +74,28 @@ flip theBITS add aONE is a two step function
 first, it takes the array given. it will traverse a single row in it (the one matching the letter currently on) using row counter as it's anchor
 it will create another array, which will be given the opposite values to the one given; " flipping the bits "
 finally, it will perform a bit wise +1 operation on the new array.
-the vlaue numValue is given only so that it may then be passed to the function : count theBITS
+the vlaue valueNumber is given only so that it may then be passed to the function : count theBITS
 *************************************************************************************************************************/
-void flip_theBITS_add_aONE( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int numValue )
+void flipAnd_addOne( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int valueNumber )
 {
     unsigned int whileLoop_condition= 1; // The condition, if a bit is 0 then adding a one will not give us another one, thus stopping the summation
     unsigned int whileLoop_counter= 0; // To count the columns in the while loop
-    unsigned int inputString_flip4negative[ MAX_LENGTH ][ BYTE_SIZE ];   // Holds the flipped bits of the sequence in case we need to find the negative integer of a bit sequence
+    unsigned int inputString_flip4negative[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   // Holds the flipped bits of the sequence in case we need to find the negative integer of a bit sequence
 
-    initialiseIntArray( inputString_flip4negative, INIT_NUM );    // initialise with zeroes
+    initialiseAn_intArray( inputString_flip4negative, INIT_NUM );    // initialise with zeroes
 
     /*
     for loop flips all the bits of the sequence above and saves them in another 2D array
     */
-    for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+    for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
     {
-        if( arbitraryArray_ofIntegers[ row_counter ][ j ]== 1 )
+        if( intArray[ counterRows ][ j ]== 1 )
         {
-            inputString_flip4negative[ row_counter ][ j ]= 0;
+            inputString_flip4negative[ counterRows ][ j ]= 0;
         }
         else
         {
-            inputString_flip4negative[ row_counter ][ j ]= 1;
+            inputString_flip4negative[ counterRows ][ j ]= 1;
         }
     }
 
@@ -100,58 +105,58 @@ void flip_theBITS_add_aONE( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ]
     */
     while( whileLoop_condition!=0 )
     {
-        whileLoop_condition= inputString_flip4negative[ row_counter ][ whileLoop_counter ];
+        whileLoop_condition= inputString_flip4negative[ counterRows ][ whileLoop_counter ];
         if( whileLoop_condition== 0 )
         {
-            inputString_flip4negative[ row_counter ][ whileLoop_counter ]= 1;
+            inputString_flip4negative[ counterRows ][ whileLoop_counter ]= 1;
         }
         else
         {
-            inputString_flip4negative[ row_counter ][ whileLoop_counter ]= 0;
+            inputString_flip4negative[ counterRows ][ whileLoop_counter ]= 0;
         }
         whileLoop_counter++;
     }
 
-    count_theBITS( inputString_flip4negative, row_counter, numValue, $_TRUE );
+    counting_theBits( inputString_flip4negative, counterRows, valueNumber, POSITIVE );
 
 }
 
 /************************************************************************************************************************************
-printEntireArray_Horizontally_FULL will take the array, go through it, and print its values in a horizontal format
+print_arrayHorizontally_Entire will take the array, go through it, and print its values in a horizontal format
 WILL PRINT ALL 100 CHARACTERS, as it is asked for in the specifications : with a -1 filling the empty spots
 ************************************************************************************************************************************/
-void printEntireArray_Horizontally_FULL( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ] )
+void print_arrayHorizontally_Entire( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ] )
 {
     unsigned char nibbleCounter = 0;
     printf("As the specifications asked for : \n");
-    for( int i= 0; i< MAX_LENGTH; i++ )
+    for( int i= 0; i< MAX_LENGTH_USER_INPUT; i++ )
     {
         for( int j= ( 2 ); j> 0; j-- )
         {
             printf("%*d%*d%*d%*d",
-                2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 1 ], 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 2 ],
-                2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 3 ], 2, arbitraryArray_ofIntegers[ i ][ ( NIBBLE_SIZE* j )- 4 ]
+                2, intArray[ i ][ ( SIZE_NIBBLE* j )- 1 ], 2, intArray[ i ][ ( SIZE_NIBBLE* j )- 2 ],
+                2, intArray[ i ][ ( SIZE_NIBBLE* j )- 3 ], 2, intArray[ i ][ ( SIZE_NIBBLE* j )- 4 ]
             );
         }
     }
 }
 
 /************************************************************************************************************************************
- initialiseIntArray will take an array and set all its values to zero
+ initialiseAn_intArray will take an array and set all its values to zero
 ************************************************************************************************************************************/
-int initialiseIntArray( unsigned int arbitraryArray_ofIntegers[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int init )
+int initialiseAn_intArray( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int init )
 {
     /*
     For loop initialises 2D array with zeroes
     */
-    for( int i= 0; i< MAX_LENGTH; i++)
+    for( int i= 0; i< MAX_LENGTH_USER_INPUT; i++)
     {
-        for( int j= 0; j< BYTE_SIZE; j++)
+        for( int j= 0; j< SIZE_BYTE; j++)
         {
-            arbitraryArray_ofIntegers[ i ][ j ]= init;
+            intArray[ i ][ j ]= init;
         }
     }
-    return ( arbitraryArray_ofIntegers );
+    return ( intArray );
 }
 
 /************************************************************************************************************
@@ -161,39 +166,39 @@ Then it checks if its posiive or negative, by checkng the leftmost sign,
 given that decision, we move on to the next function : flip and add one,
 or jump to the last function : count theBITS
 ************************************************************************************************************/
-int toASCII_onTwosComplement( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp )
+int encode_onFlippingBits( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp )
 {
-    unsigned int numValue= 0;
+    unsigned int valueNumber= 0;
     unsigned int whileLoop_condition= 1;
     unsigned int whileLoop_counter= 0;
 
     /*
     for loop flips  all the bits of the sequence above
     */
-    for( int j= ( BYTE_SIZE-1 ); j>= 0; j-- )
+    for( int j= ( SIZE_BYTE-1 ); j>= 0; j-- )
     {
         if((( temp& ( 1<< j ))>> j )> 0 )
         {
-            inputString_enconded[ row_counter ][ j ]= 0;
+            userInput_encoded[ counterRows ][ j ]= 0;
         }
         else
         {
-            inputString_enconded[ row_counter ][ j ]= 1;
+            userInput_encoded[ counterRows ][ j ]= 1;
         }
     }
 
     /*
     If statement checks if we have a positive or a negative in the left most digit of out 8-bit sequence
     */
-    if( inputString_enconded[ row_counter ][ 7 ]== 1 )
+    if( userInput_encoded[ counterRows ][ 7 ]== 1 )
     {
-        flip_theBITS_add_aONE( inputString_enconded, row_counter, numValue );
+        flipAnd_addOne( userInput_encoded, counterRows, valueNumber );
     }
     else
     {
-        count_theBITS( inputString_enconded, row_counter, numValue, $_FALSE );
+        counting_theBits( userInput_encoded, counterRows, valueNumber, NEGATIVE );
     }
-    return inputString_enconded;
+    return userInput_encoded;
 }
 
 /************************************************************************************************************
@@ -202,25 +207,25 @@ Given the original array, it fills the spaces in the array 'encoded' by reading 
 then it checks whether or not the lfetmost digit is 1 or 0, representing negative or positive sign.
 chossing, thus, which function to jump to afterwards based on that realisation
 ************************************************************************************************************/
-int toASCII_onBitReverse( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp )
+int encode_onSwappingBits( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp )
 {
-    unsigned int numValue= 0;          // The value which holds the sum of all the 1s in the bit sequence
-    unsigned int traverseRight= START_oftheARRAY;         // the value used to traverse the n=8 arrays from the right
-    unsigned int traverseLeft= BYTE_SIZE_ARRAY;    // The value used to traverse the n=8 arrays from the left
-    unsigned int traverseMiddle= NIBBLE_SIZE;    // The value used to traverse the n=8 arrays starting from the middle
+    unsigned int valueNumber= 0;          // The value which holds the sum of all the 1s in the bit sequence
+    unsigned int traverseRight= BEGINNING_ARRAY;         // the value used to traverse the n=8 arrays from the right
+    unsigned int traverseLeft= SIZE_BYTE_ARRAY;    // The value used to traverse the n=8 arrays from the left
+    unsigned int traverseMiddle= SIZE_NIBBLE;    // The value used to traverse the n=8 arrays starting from the middle
 
     /*
     while loop create the new array by comparing the orginal's values
     */
-    while( traverseRight!= BYTE_SIZE )
+    while( traverseRight!= SIZE_BYTE )
     {
-        if( inputString_original[ row_counter ][ traverseRight ]== 1 )
+        if( userInput_original[ counterRows ][ traverseRight ]== 1 )
         {
-            inputString_enconded[ row_counter ][ traverseLeft ]= 1;
+            userInput_encoded[ counterRows ][ traverseLeft ]= 1;
         }
         else
         {
-            inputString_enconded[ row_counter ][ traverseLeft ]= 0;
+            userInput_encoded[ counterRows ][ traverseLeft ]= 0;
         }
         traverseRight++;
         traverseLeft--;
@@ -229,15 +234,15 @@ int toASCII_onBitReverse( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_
     /*
     If statement checks if we have a positive or a negative in the left most digit of out 8-bit sequence
     */
-    if( inputString_enconded[ row_counter ][ 7 ]== 1 )
+    if( userInput_encoded[ counterRows ][ 7 ]== 1 )
     {
-        flip_theBITS_add_aONE( inputString_enconded, row_counter, numValue );
+        flipAnd_addOne( userInput_encoded, counterRows, valueNumber );
     }
     else
     {
-        count_theBITS( inputString_enconded, row_counter, numValue, $_FALSE );
+        counting_theBits( userInput_encoded, counterRows, valueNumber, NEGATIVE );
     }
-    return inputString_enconded;
+    return userInput_encoded;
 }
 
 /************************************************************************************************************
@@ -246,32 +251,32 @@ the same as the originals; however, it divides the original's in nibbles (groups
 them about. Then it checks whetehr or not the leftmost digit is 1 or a 0, marking negative/positive.
 Afterwards, it calls on the next functions.
 ************************************************************************************************************/
-int toASCII_nibbleSwap( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ], unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ], int row_counter, unsigned int temp )
+int encode_onSwappingNibbles( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp )
 {
-    unsigned int numValue= 0;          // The value which holds the sum of all the 1s in the bit sequence
-    unsigned int traverseRight= START_oftheARRAY;         // the value used to traverse the n=8 arrays from the right
-    unsigned int traverseLeft= BYTE_SIZE_ARRAY;    // The value used to traverse the n=8 arrays from the left
-    unsigned int traverseMiddle= NIBBLE_SIZE;    // The value used to traverse the n=8 arrays starting from the middle
-    unsigned int inputString_flip4negative[ MAX_LENGTH ][ BYTE_SIZE ];   // Holds the flipped bits of the sequence in case we need to find the negative integer of a bit sequence
+    unsigned int valueNumber= 0;          // The value which holds the sum of all the 1s in the bit sequence
+    unsigned int traverseRight= BEGINNING_ARRAY;         // the value used to traverse the n=8 arrays from the right
+    unsigned int traverseLeft= SIZE_BYTE_ARRAY;    // The value used to traverse the n=8 arrays from the left
+    unsigned int traverseMiddle= SIZE_NIBBLE;    // The value used to traverse the n=8 arrays starting from the middle
+    unsigned int inputString_flip4negative[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   // Holds the flipped bits of the sequence in case we need to find the negative integer of a bit sequence
     unsigned int whileLoop_condition= 1;
     unsigned int whileLoop_counter= 0;
 
-    initialiseIntArray( inputString_flip4negative, INIT_NUM );
+    initialiseAn_intArray( inputString_flip4negative, INIT_NUM );
 
     /*
     for loop create the new array by comparing the orginal's values in the 1st half
     */
-    for( int j= ( BYTE_SIZE_ARRAY ); j>= NIBBLE_SIZE; j-- )
+    for( int j= ( SIZE_BYTE_ARRAY ); j>= SIZE_NIBBLE; j-- )
     {
-        if( inputString_original[ row_counter ][ traverseMiddle ]== 1 )
+        if( userInput_original[ counterRows ][ traverseMiddle ]== 1 )
         {
-            inputString_enconded[ row_counter ][ traverseRight ]= 1;
-            //printf( "%d", inputString_enconded[ row_counter ][ traverseRight ] );
+            userInput_encoded[ counterRows ][ traverseRight ]= 1;
+            //printf( "%d", userInput_encoded[ counterRows ][ traverseRight ] );
         }
         else
         {
-            inputString_enconded[ row_counter ][ traverseRight ]= 0;
-            //printf( "%d", inputString_enconded[ row_counter ][ traverseRight ] );
+            userInput_encoded[ counterRows ][ traverseRight ]= 0;
+            //printf( "%d", userInput_encoded[ counterRows ][ traverseRight ] );
         }
         traverseRight++;
         traverseMiddle++;
@@ -279,32 +284,32 @@ int toASCII_nibbleSwap( unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SI
     /*
     for loop create the new array by comparing the orginal's values in the 2nd half
     */
-    for( int j= 0; j< NIBBLE_SIZE; j++ )
+    for( int j= 0; j< SIZE_NIBBLE; j++ )
     {
-        if( inputString_original[ row_counter ][ j ]== 1 )
+        if( userInput_original[ counterRows ][ j ]== 1 )
         {
-            inputString_enconded[ row_counter ][ j+ NIBBLE_SIZE ]= 1;
-            //printf( "%d", inputString_enconded[ row_counter ][ traverseRight ] );
+            userInput_encoded[ counterRows ][ j+ SIZE_NIBBLE ]= 1;
+            //printf( "%d", userInput_encoded[ counterRows ][ traverseRight ] );
         }
         else
         {
-            inputString_enconded[ row_counter ][ j+ NIBBLE_SIZE ]= 0;
-            //printf( "%d", inputString_enconded[ row_counter ][ traverseRight ] );
+            userInput_encoded[ counterRows ][ j+ SIZE_NIBBLE ]= 0;
+            //printf( "%d", userInput_encoded[ counterRows ][ traverseRight ] );
         }
     }
 
     /*
     If statement checks if we have a positive or a negative in the left most digit of out 8-bit sequence
     */
-    if( inputString_enconded[ row_counter ][ 7 ]== 1 )
+    if( userInput_encoded[ counterRows ][ 7 ]== 1 )
     {
-        flip_theBITS_add_aONE( inputString_enconded, row_counter, numValue );
+        flipAnd_addOne( userInput_encoded, counterRows, valueNumber );
     }
     else
     {
-        count_theBITS( inputString_enconded, row_counter, numValue, $_FALSE );
+        counting_theBits( userInput_encoded, counterRows, valueNumber, NEGATIVE );
     }
-    return inputString_enconded;
+    return userInput_encoded;
 
 }
 
@@ -314,12 +319,12 @@ Since we know each character is ade up of a byte, we can also skip checking for 
 How many characters are there in the sentence... First we must find out the total amount of elements in the array
 Then we must fin dout the total amount of rows
 ************************************************************************************************************************************/
-void decipherCode( unsigned int enconded[ MAX_LENGTH ][ BYTE_SIZE ] )
+void decipher_Code( unsigned int encodedSequences[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ] )
 {
     /*
     We know the ciphering stops when the -1 starts, so we can copy the elements
     into another array, dividing each row in bytes, and stopping when we reach a -1
-    We know the size of the array given is MAX_LENGTH (101); we use that to obtain a reach rom 0 to 100.
+    We know the size of the array given is MAX_LENGTH_USER_INPUT (101); we use that to obtain a reach rom 0 to 100.
     We know each byte is 8 bits, we use that to obtain the colums
     All that said,
     first, we must find out how many bits are in the array.
@@ -327,11 +332,11 @@ void decipherCode( unsigned int enconded[ MAX_LENGTH ][ BYTE_SIZE ] )
     let's count them in a very inefficient way like we used to do at the beginning of 2402
     */
     unsigned int counterBits = 0;
-    for( int i= 0; i< MAX_LENGTH; i++  )
+    for( int i= 0; i< MAX_LENGTH_USER_INPUT; i++  )
     {
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
-            if( enconded[ i ][ j  ]!= ( -1 ))
+            if( encodedSequences[ i ][ j  ]!= ( -1 ))
             {
                 counterBits++;
             }
@@ -348,14 +353,14 @@ void decipherCode( unsigned int enconded[ MAX_LENGTH ][ BYTE_SIZE ] )
     /*
     This array will hold the 'cleaned' bit sequence
     */
-    unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ];
+    unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ];
     /*
     Now that we have the exact amount of rows as characters in the sentence,
     we initialise the array with zeroes, instead of -1
     */
     for( int i= 0; i< decodedRows; i++ )
     {
-        for( int j= 0; j<BYTE_SIZE; j++ )
+        for( int j= 0; j<SIZE_BYTE; j++ )
         {
             inputString_decoded[ i ][ j ]= 0;
         }
@@ -366,22 +371,22 @@ void decipherCode( unsigned int enconded[ MAX_LENGTH ][ BYTE_SIZE ] )
     In theory, we should end up with an exactly full array. No more no less.
     To do this, we will place an if statement to check if we're copying bits or negative ones
     */
-    for( int i= 0; i< MAX_LENGTH; i++  )
+    for( int i= 0; i< MAX_LENGTH_USER_INPUT; i++  )
     {
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
-            if( enconded[ i ][ j  ]!= ( -1 ))
+            if( encodedSequences[ i ][ j  ]!= ( -1 ))
             {
-                inputString_decoded[ i ][ j ] = enconded[ i ][ j ];
+                inputString_decoded[ i ][ j ] = encodedSequences[ i ][ j ];
             }
         }
     }
     /*
     Now that we have a clean array. we need to reverse the process for each cipher we did
     */
-    decipherBitFlip( inputString_decoded );
-    decipherBitReverse( inputString_decoded );
-    decipherNibbleSwap( inputString_decoded );
+    decipher_BitFlip( inputString_decoded );
+    decipher_BitSwap( inputString_decoded );
+    decipher_NibbleSwap( inputString_decoded );
     printf("Deciphered message with a %.2f", percentageAlphanumerical_Max);
     printf("%% accuracy\n");
 }
@@ -393,7 +398,7 @@ and then we will reverse the process did on the cipher Nibble Swap
 finally, we will print out the percentage of alphanumeric characters vs the total amount of characters in the sentece,
 which we happen to know is == to decodedRows
 */
-void decipherNibbleSwap( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] )
+void decipher_NibbleSwap( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] )
 {
     /*
     What did Nibble Swap do ?
@@ -403,7 +408,7 @@ void decipherNibbleSwap( unsigned int inputString_decoded[ decodedRows ][ BYTE_S
     /*
     This array will be the temporary that we will play with
     */
-    unsigned int inputString_decoded_NibbleSwap[ decodedRows ][ BYTE_SIZE ];
+    unsigned int inputString_decoded_NibbleSwap[ decodedRows ][ SIZE_BYTE ];
     /*
     we initialise the array with the values of inputString_decoded
     breaking apart the nibbles and switching them
@@ -411,30 +416,30 @@ void decipherNibbleSwap( unsigned int inputString_decoded[ decodedRows ][ BYTE_S
     */
     for( int i= 0; i< decodedRows; i++ )
     {
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= NIBBLE_SIZE; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= SIZE_NIBBLE; j-- )
         {
             if( inputString_decoded[ i ][ j ]== 1 )
             {
-                inputString_decoded_NibbleSwap[ i ][ ( j- NIBBLE_SIZE) ]= 1;
+                inputString_decoded_NibbleSwap[ i ][ ( j- SIZE_NIBBLE) ]= 1;
             }
             else
             {
-                inputString_decoded_NibbleSwap[ i ][ (j- NIBBLE_SIZE) ]= 0;
+                inputString_decoded_NibbleSwap[ i ][ (j- SIZE_NIBBLE) ]= 0;
             }
         }
     }
     for( int i= 0; i< decodedRows; i++ )
     {
             /* the minus one marks where we left off in the last loop */
-        for( int j= ( NIBBLE_SIZE-1 ); j>= 0; j-- )
+        for( int j= ( SIZE_NIBBLE-1 ); j>= 0; j-- )
         {
             if( inputString_decoded[ i ][ j ]== 1 )
             {
-                inputString_decoded_NibbleSwap[ i ][( NIBBLE_SIZE+ j )]= 1;
+                inputString_decoded_NibbleSwap[ i ][( SIZE_NIBBLE+ j )]= 1;
             }
             else
             {
-                inputString_decoded_NibbleSwap[ i ][( NIBBLE_SIZE+ j )]= 0;
+                inputString_decoded_NibbleSwap[ i ][( SIZE_NIBBLE+ j )]= 0;
             }
         }
     }
@@ -467,7 +472,7 @@ void decipherNibbleSwap( unsigned int inputString_decoded[ decodedRows ][ BYTE_S
         for every row we go through
         */
         integerHolder = 0;
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
             if( inputString_decoded_NibbleSwap[ i ][ j ]== 1 ){ integerHolder+= pow( 2,j ); }
         }
@@ -517,7 +522,7 @@ and then we will reverse the process did on the cipher bit Reverse
 finally, we will print out the percentage of alphanumeric characters vs the total amount of characters in the sentece,
 which we happen to know is == to decodedRows
 */
-void decipherBitReverse( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] )
+void decipher_BitSwap( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] )
 {
     /*
     What did Bit Reverse do ?
@@ -527,21 +532,21 @@ void decipherBitReverse( unsigned int inputString_decoded[ decodedRows ][ BYTE_S
     /*
     This array will be the temporary that we will play with
     */
-    unsigned int inputString_decoded_BitReverse[ decodedRows ][ BYTE_SIZE ];
+    unsigned int inputString_decoded_BitReverse[ decodedRows ][ SIZE_BYTE ];
     /*
     we initialise the array with the values of inputString_decoded backwards
     */
     for( int i= 0; i< decodedRows; i++ )
     {
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
             if( inputString_decoded[ i ][ j ]== 1 )
             {
-                inputString_decoded_BitReverse[ i ][ (BYTE_SIZE_ARRAY-j) ]= 1;
+                inputString_decoded_BitReverse[ i ][ (SIZE_BYTE_ARRAY-j) ]= 1;
             }
             else
             {
-                inputString_decoded_BitReverse[ i ][ (BYTE_SIZE_ARRAY-j) ]= 0;
+                inputString_decoded_BitReverse[ i ][ (SIZE_BYTE_ARRAY-j) ]= 0;
             }
         }
     }
@@ -574,7 +579,7 @@ void decipherBitReverse( unsigned int inputString_decoded[ decodedRows ][ BYTE_S
         for every row we go through
         */
         integerHolder = 0;
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
             if( inputString_decoded_BitReverse[ i ][ j ]== 1 ){ integerHolder+= pow( 2,j ); }
         }
@@ -624,7 +629,7 @@ and then we will reverse the process did on the cipher Bit Flip
 finally, we will print out the percentage of alphanumeric characters vs the total amount of characters in the sentece,
 which we happen to know is == to decodedRows
 */
-void decipherBitFlip( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE ] )
+void decipher_BitFlip( unsigned int inputString_decoded[ decodedRows ][ SIZE_BYTE ] )
 {
     /*
     What did Bit Flip do ?
@@ -634,13 +639,13 @@ void decipherBitFlip( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE
     /*
     This array will be the temporary that we will play with
     */
-    unsigned int inputString_decoded_BitFlip[ decodedRows ][ BYTE_SIZE ];
+    unsigned int inputString_decoded_BitFlip[ decodedRows ][ SIZE_BYTE ];
     /*
     we initialise the array with the opposite values of inputString_decoded
     */
     for( int i= 0; i< decodedRows; i++ )
     {
-        for( int j= 0; j<BYTE_SIZE; j++ )
+        for( int j= 0; j<SIZE_BYTE; j++ )
         {
             if( inputString_decoded[ i ][ j ]== 1 )
             {
@@ -681,7 +686,7 @@ void decipherBitFlip( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE
         for every row we go through
         */
         integerHolder = 0;
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
             if( inputString_decoded_BitFlip[ i ][ j ]== 1 ){ integerHolder+= pow( 2,j ); }
         }
@@ -728,13 +733,13 @@ void decipherBitFlip( unsigned int inputString_decoded[ decodedRows ][ BYTE_SIZE
 
 int main()
 {
-    unsigned char inputString_m[ MAX_LENGTH ]= "";           // Holds the sentence given
-    unsigned int inputString_original[ MAX_LENGTH ][ BYTE_SIZE ];   // Holds the bit sequence of the sentence
-    unsigned int inputString_enconded[ MAX_LENGTH ][ BYTE_SIZE ];   // Holds the flipped bits of the sequence
+    unsigned char inputString_m[ MAX_LENGTH_USER_INPUT ]= "";           // Holds the sentence given
+    unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   // Holds the bit sequence of the sentence
+    unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   // Holds the flipped bits of the sequence
     unsigned int length_ofWord= 0;       // holds the length of the words given by the user
     unsigned int temp= 0;            // Used to hold the Integer version of the letters in inputString_m
     unsigned int tempCounter= 0;     // Used to count so as to write the Integer version of the Binary Econding
-    unsigned char cipher[ MAX_LENGTH ][ BYTE_SIZE ]= {{""}}; // Will hold the know ciphered bit sequence in the form of a string
+    unsigned char cipher[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ]= {{""}}; // Will hold the know ciphered bit sequence in the form of a string
     unsigned int randomCounter= 0; // Keeps track of the random number that will choose the cipher
 
     /* The following line of code was copied from the course notes */
@@ -743,9 +748,9 @@ int main()
     scanf( "%s", &( inputString_m[ 0 ]));           // save the string given by user
     length_ofWord = strlen( inputString_m );        // mark the length of said string
 
-    // Call initialiseIntArray to set the values of our arrays to zero
-    initialiseIntArray( inputString_original, INIT_NUM );
-    initialiseIntArray( inputString_enconded, INIT_NUM );
+    // Call initialiseAn_intArray to set the values of our arrays to zero
+    initialiseAn_intArray( userInput_original, INIT_NUM );
+    initialiseAn_intArray( userInput_encoded, INIT_NUM );
 
     /*
         For loop starts the program, Picking off the first letter in the sentence
@@ -761,7 +766,7 @@ int main()
     /*
     For loop then starts the range from 0 to 7, the size of a character in bits
     */
-        for( int j= ( BYTE_SIZE_ARRAY ); j>= 0; j-- )
+        for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
         {
 
     /*
@@ -769,11 +774,11 @@ int main()
     */
             if((( temp& ( 1<< j ))>> j )> 0 )
             {
-                inputString_original[ i ][ j ]= 1;
+                userInput_original[ i ][ j ]= 1;
             }
             else
             {
-                inputString_original[ i ][ j ]= 0;
+                userInput_original[ i ][ j ]= 0;
             }
         }
 
@@ -783,24 +788,24 @@ int main()
     /* If ternary statement grabs the randomCounter and chooses a cipher depending on the int given */
         if(  randomCounter== 0)
         {
-            toASCII_onTwosComplement( inputString_original, inputString_enconded, i, temp );
+            encode_onFlippingBits( userInput_original, userInput_encoded, i, temp );
 
         }
         else if(  randomCounter== 1)
         {
-            toASCII_onBitReverse( inputString_original, inputString_enconded, i, temp );
+            encode_onSwappingBits( userInput_original, userInput_encoded, i, temp );
 
         }
         else
         {
-            toASCII_nibbleSwap( inputString_original, inputString_enconded, i, temp );
+            encode_onSwappingNibbles( userInput_original, userInput_encoded, i, temp );
         }
     }
-    printEntireArray_Horizontally_FULL( inputString_enconded );
+    print_arrayHorizontally_Entire( userInput_encoded );
     printf( "\n\n" );
     printf( "Deciphering...\n" );
     printf( "...\n" );
     printf( "Deciphered:\n" );
-    decipherCode( inputString_enconded );
+    decipher_Code( userInput_encoded );
     return 0;
 }
