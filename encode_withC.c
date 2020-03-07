@@ -7,17 +7,18 @@
 							/** ** ** * 
 			Randomly Encoding : Playing with Arrays and ASCII characters 
 							** ** ** */ 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 
-#define MAX_LENGTH_USER_INPUT 50       	// Max length of string
-#define POSITIVE 1       		        // Mimicks boolean
-#define NEGATIVE 0       	     		// Mimicks boolean 
+
 #define BEGINNING_ARRAY 0   			// Starting point of arrays 
 #define INIT_NUM 0          			// Digit to initialise arrays with 
+#define MAX_LENGTH_USER_INPUT 50       	// Max length of string
+#define NEGATIVE 0       	     		// Mimicks boolean 
+#define POSITIVE 1       		        // Mimicks boolean
 #define SIZE_BYTE 8          			// Size of byte 
 #define SIZE_BYTE_ARRAY 7	 			// Number used when traversing arrays 
 #define SIZE_NIBBLE 4        			// Size of nibble 
@@ -151,13 +152,13 @@ void counting_theBits( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE
 			* ** ** **/
 void flipAnd_addOne( unsigned int intArray[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int valueNumber )
 {
-    unsigned int whileLoop_condition= 1; 
-    unsigned int whileLoop_counter= 0; 
     unsigned int inputString_flip4negative[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   
+	unsigned int whileLoop_condition= 1; 
+    unsigned int whileLoop_counter= 0; 
+    
 
 // Initialise array with INIT_NUM
     initialiseAn_intArray( inputString_flip4negative );    
-
 
 // For loop : Flips all Nums of the sequence. Saves them in another 2D array. 
     for( int j= ( SIZE_BYTE_ARRAY ); j>= 0; j-- )
@@ -483,11 +484,11 @@ int encode_onSwappingBits( unsigned int userInput_original[ MAX_LENGTH_USER_INPU
 			* ** ** **/
 int encode_onSwappingNibbles( unsigned int userInput_original[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], unsigned int userInput_encoded[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ], int counterRows, unsigned int temp )
 {
-    unsigned int valueNumber= 0;        
-    unsigned int traverseRight= BEGINNING_ARRAY;
-    unsigned int traverseLeft= SIZE_BYTE_ARRAY;    
-    unsigned int traverseMiddle= SIZE_NIBBLE;    
-    unsigned int inputString_flip4negative[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];   
+    unsigned int inputString_flip4negative[ MAX_LENGTH_USER_INPUT ][ SIZE_BYTE ];
+    unsigned int traverseLeft= SIZE_BYTE_ARRAY;
+    unsigned int traverseMiddle= SIZE_NIBBLE;
+	unsigned int traverseRight= BEGINNING_ARRAY;
+    unsigned int valueNumber= 0;
     unsigned int whileLoop_condition= 1;
     unsigned int whileLoop_counter= 0;
 
